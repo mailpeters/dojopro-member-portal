@@ -1,0 +1,19 @@
+
+
+const mysql = require('mysql2/promise');
+
+// Use the same database config as admin portal
+const db = mysql.createConnection({
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'dojoapp',
+    password: process.env.DB_PASSWORD || 'djppass',
+    database: process.env.DB_NAME || 'dojopro',
+    timezone: '+00:00'
+});
+
+// Test connection
+db.execute('SELECT 1')
+    .then(() => console.log('Member Portal: Connected to MariaDB database'))
+    .catch(err => console.error('Member Portal: Database connection failed:', err));
+
+module.exports = db;

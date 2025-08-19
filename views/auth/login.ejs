@@ -1,0 +1,40 @@
+<div class="page-header">
+    <h1 class="page-title">Member Login</h1>
+    <p class="page-subtitle">Access your <%= club.name %> account</p>
+</div>
+
+<div style="max-width: 500px; margin: 0 auto;">
+    <div class="card">
+        <div class="card-header" style="text-align: center;">
+            <h3 class="card-title">🔐 Member Portal Access</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="/auth/login">
+                <div class="form-group">
+                    <label for="email" class="form-label">📧 Email Address</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">🔒 Password</label>
+                    <input type="password" class="form-control" id="password" name="password" 
+                           placeholder="Leave blank if you haven't set one yet">
+                    <small style="color: #666; font-size: 0.8rem;">
+                        First time? Just enter your email and we'll help you set up a password.
+                    </small>
+                </div>
+                
+                <button type="submit" class="btn" style="width: 100%; padding: 12px; font-size: 1.1rem;">
+                    🚀 Login to Portal
+                </button>
+            </form>
+            
+            <div style="text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #f0f0f0;">
+                <p style="color: #666; font-size: 0.9rem;">
+                    ❓ Need help accessing your account?<br>
+                    Contact <%= club.name %> for assistance.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,51 @@
+<div class="page-header">
+    <h1 class="page-title">
+        <% if (error.status === 404) { %>
+            🔍 Page Not Found
+        <% } else { %>
+            ⚠️ Error <%= error.status || 500 %>
+        <% } %>
+    </h1>
+    <p class="page-subtitle">
+        <% if (error.status === 404) { %>
+            The page you're looking for doesn't exist
+        <% } else { %>
+            Something went wrong
+        <% } %>
+    </p>
+</div>
+
+<div style="max-width: 600px; margin: 0 auto;">
+    <div class="card">
+        <div class="card-body" style="text-align: center; padding: 3rem;">
+            <% if (error.status === 404) { %>
+                <div style="font-size: 6rem; margin-bottom: 2rem;">🤔</div>
+                <h3>Oops! Page Not Found</h3>
+                <p style="color: #666; margin: 1.5rem 0;">
+                    The page you're trying to reach doesn't exist or may have been moved.
+                </p>
+            <% } else { %>
+                <div style="font-size: 6rem; margin-bottom: 2rem;">😵</div>
+                <h3>Something Went Wrong</h3>
+                <p style="color: #666; margin: 1.5rem 0;">
+                    <%= error.message || 'An unexpected error occurred. Please try again.' %>
+                </p>
+            <% } %>
+            
+            <div style="margin-top: 2rem;">
+                <% if (user) { %>
+                    <a href="/dashboard" class="btn" style="margin-right: 1rem;">
+                        🏠 Back to Dashboard
+                    </a>
+                <% } else { %>
+                    <a href="/" class="btn" style="margin-right: 1rem;">
+                        🏠 Back to Home
+                    </a>
+                <% } %>
+                <button onclick="history.back()" class="btn btn-secondary">
+                    ⬅️ Go Back
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

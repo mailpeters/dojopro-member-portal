@@ -1,0 +1,158 @@
+<div class="page-header">
+    <h1 class="page-title">Welcome back, <%= member.first_name %>!</h1>
+    <p class="page-subtitle">
+        <% if (member.belt_rank) { %>
+            <span class="belt-rank"><%= member.belt_rank %></span>
+        <% } %>
+        Ready for your next training session?
+    </p>
+</div>
+
+<!-- Quick Stats -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-number"><%= stats.total_visits %></span>
+        <div class="stat-label">🏆 Total Visits</div>
+    </div>
+    <div class="stat-card">
+        <span class="stat-number"><%= stats.visits_this_month %></span>
+        <div class="stat-label">🔥 This Month</div>
+    </div>
+    <div class="stat-card">
+        <span class="stat-number">
+            <% if (stats.last_visit) { %>
+                <%= formatDateWithTimezone(stats.last_visit, club.timezone) %>
+            <% } else { %>
+                Never
+            <% } %>
+        </span>
+        <div class="stat-label">🕐 Last Visit</div>
+    </div>
+    <div class="stat-card">
+        <span class="stat-number">
+            <% if (currentCheckin) { %>
+                <span style="color: #28a745;">✅</span>
+            <% } else { %>
+                <span style="color: #dc3545;">❌</span>
+            <% } %>
+        </span>
+        <div class="stat-label">
+            <% if (currentCheckin) { %>
+                Checked In
+            <% } else { %>
+                Check In Ready
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<!-- Current Status -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">🎯 Current Status</h3>
+    </div>
+    <div class="card-body">
+        <% if (currentCheckin) { %>
+            <div class="alert alert-success">
+                <strong>✅ Currently Checked In</strong><br>
+                📍 Location: <strong><%= currentCheckin.location_name %></strong><br>
+                🕐 Since: <strong><%= formatTimeWithTimezone(currentCheckin.check_in_time, club.timezone) %></strong>
+            </div>
+            <button onclick="checkOut()" class="btn btn-danger" style="margin-right: 1rem;">
+                🚪 Check Out Now
+            </button>
+        <% } else { %>
+            <div class="alert alert-info">
+                <strong>🎯 Ready to Train!</strong><br>
+                You're not currently checked in to any location.
+            </div>
+            <a href="/checkin" class="btn" style="margin-right: 1rem;">
+                ✅ Check In Now
+            </a>
+        <% } %>
+        <a href="/profile" class="btn btn-secondary">
+            👤 View Profile
+        </a>
+    </div>
+</div>
+
+<!-- Recent Training History -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">📈 Recent Training Sessions</h3>
+    </div>
+    <div class="card-body">
+        <% if (checkins.length > 0) { %>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>📍 Location</th>
+                        <th>🕐 Check-in</th>
+                        <th>🚪 Check-out</th>
+                        <th>⏱️ Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% checkins.forEach(function(checkin) { %>
+                        <tr>
+                            <td><%= checkin.location_name %></td>
+                            <td><%= formatTimeWithTimezone(checkin.check_in_time, checkin.location_timezone || club.timezone) %></td>
+                            <td>
+                                <% if (checkin.check_out_time) { %>
+                                    <%= formatTimeWithTimezone(checkin.check_out_time, checkin.location_timezone || club.timezone) %>
+                                <% } else { %>
+                                    <span class="badge badge-success">Active</span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <% if (checkin.check_out_time) { %>
+                                    <% 
+                                        const checkinTime = new Date(checkin.check_in_time);
+                                        const checkoutTime = new Date(checkin.check_out_time);
+                                        const durationMs = checkoutTime - checkinTime;
+                                        const hours = Math.floor(durationMs / (1000 * 60 * 60));
+                                        const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+                                    %>
+                                    <%= hours > 0 ? hours + 'h ' : '' %><%= minutes %>m
+                                <% } else { %>
+                                    <span style="color: #666;">In progress...</span>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <div style="text-align: center; padding: 3rem; color: #666;">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">🥋</div>
+                <h4>No Training Sessions Yet</h4>
+                <p>Start your martial arts journey by checking in for your first class!</p>
+                <a href="/checkin" class="btn" style="margin-top: 1rem;">
+                    ✅ Check In Now
+                </a>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<script>
+async function checkOut() {
+    try {
+        const response = await fetch('/checkin/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showAlert(result.message, 'success');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showAlert(result.message, 'error');
+        }
+    } catch (error) {
+        showAlert('Check-out failed. Please try again.', 'error');
+    }
+}
+</script>
