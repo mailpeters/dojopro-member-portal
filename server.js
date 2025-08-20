@@ -7,6 +7,8 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 require('dotenv').config();
 
+const expressLayouts = require('express-ejs-layouts');
+
 // Timezone helper functions (matching admin portal)
 function formatTimeWithTimezone(dateTime, timezone) {
     if (!dateTime) return null;
@@ -77,8 +79,16 @@ app.use(session({
 app.use(flash());
 
 // View engine setup
+//app.set('view engine', 'ejs');
+//app.set('views', path.join(__dirname, 'views'));
+
+// View engine setup with layouts
+// const expressLayouts = require('express-ejs-layouts');
+app.use(expressLayouts);
+app.set('layout', 'layouts/main');
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+
 
 // Global middleware to pass user session and club data to all templates
 app.use(async (req, res, next) => {
@@ -145,6 +155,7 @@ function requireAuth(req, res, next) {
 // Routes
 
 // Home page - redirect based on authentication
+// Home page - redirect based on authentication
 app.get('/', (req, res) => {
     if (req.session.user) {
         res.redirect('/dashboard');
@@ -155,6 +166,8 @@ app.get('/', (req, res) => {
         });
     }
 });
+
+
 
 // Login page
 app.get('/auth/login', (req, res) => {
@@ -380,6 +393,43 @@ app.post('/auth/login', async (req, res) => {
                 // Rest of normal login code...
                 console.log('🔐 Proceeding with normal password validation');
                 // ... (rest of your existing login code)
+
+                    try {
+                        const validPassword = await bcrypt.compare(password, userAccount.password_hash);
+                        console.log('🔐 Password validation result:', validPassword);
+                        
+                        if (!validPassword) {
+                            req.flash('error', 'Invalid password');
+                            return res.redirect('/auth/login');
+                        }
+
+                        // Success! Create session
+                        req.session.user = {
+                            user_id: userAccount.user_id,
+                            member_id: member.member_id,
+                            club_id: member.club_id,
+                            first_name: member.first_name,
+                            last_name: member.last_name,
+                            email: member.email,
+                            belt_rank: member.belt_rank,
+                            membership_type: member.membership_type,
+                            household_id: member.household_id,
+                            is_primary_member: member.is_primary_member
+                        };
+
+                        console.log('🎉 Login successful for:', member.first_name, member.last_name);
+                        req.flash('success', `Welcome back, ${member.first_name}!`);
+                        res.redirect('/dashboard');
+
+                    } catch (bcryptError) {
+                        console.error('❌ Password comparison error:', bcryptError);
+                        req.flash('error', 'Authentication failed');
+                        res.redirect('/auth/login');
+                    }
+
+
+
+
             });
         });
 

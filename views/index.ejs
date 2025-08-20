@@ -3,26 +3,6 @@
     <p class="page-subtitle">Your martial arts journey starts here</p>
 </div>
 
-<% if (!user) { %>
-<!-- Welcome Section for Non-Authenticated Users -->
-<div class="stats-grid">
-    <div class="stat-card">
-        <div style="font-size: 3rem; margin-bottom: 1rem;">🥋</div>
-        <h3>Train Anywhere</h3>
-        <p style="color: #666;">Easy check-in at any location</p>
-    </div>
-    <div class="stat-card">
-        <div style="font-size: 3rem; margin-bottom: 1rem;">📱</div>
-        <h3>Track Progress</h3>
-        <p style="color: #666;">Monitor your martial arts journey</p>
-    </div>
-    <div class="stat-card">
-        <div style="font-size: 3rem; margin-bottom: 1rem;">👨‍👩‍👧‍👦</div>
-        <h3>Family Accounts</h3>
-        <p style="color: #666;">Manage your whole family's training</p>
-    </div>
-</div>
-
 <div class="card">
     <div class="card-header">
         <h3 class="card-title">Member Login</h3>
@@ -32,14 +12,10 @@
             Access your personal training dashboard, check in for classes, and track your progress.
         </p>
         <a href="/auth/login" class="btn" style="font-size: 1.1rem; padding: 15px 30px;">
-            🔐 Login to Member Portal
+            Login to Member Portal
         </a>
         <p style="margin-top: 1rem; font-size: 0.9rem; color: #999;">
             Need help accessing your account? Contact <%= club.name %> directly.
         </p>
     </div>
 </div>
-<% } else { %>
-<!-- Redirect authenticated users to dashboard -->
-<script>window.location.href = '/dashboard';</script>
-<% } %>
