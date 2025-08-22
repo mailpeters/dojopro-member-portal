@@ -47,9 +47,9 @@ const PORT = process.env.PORT || 3003;
 // Database connection (matching admin portal exactly)
 const db = mysql.createConnection({
     host: process.env.DB_HOST || "localhost",
-    user: process.env.DB_USER || "dojoapp",
+    user: process.env.DB_USER || "clubapp",
     password: process.env.DB_PASSWORD || "djppass",
-    database: process.env.DB_NAME || "dojopro",
+    database: process.env.DB_NAME || "clubdirector",
     timezone: '+00:00'
 });
 
@@ -98,37 +98,33 @@ app.use(async (req, res, next) => {
     res.locals.formatDateWithTimezone = formatDateWithTimezone;
     
     try {
-        // Extract club from subdomain or parameter
-        const host = req.get('host') || '';
-        let subdomain = 'demo';
-        
-        if (host.includes('.')) {
-            subdomain = host.split('.')[0];
-        }
+        // For now, use club_id = 1 (first club) or allow override with query parameter
+        let clubId = 1; // Default to first club
         
         // Allow override with query parameter for development
-        subdomain = req.query.club || subdomain;
+        if (req.query.club) {
+            clubId = parseInt(req.query.club) || 1;
+        }
         
         // Load club data from database
         const query = `
             SELECT c.*, cs.logo_url, cs.primary_color, cs.secondary_color, cs.timezone
             FROM clubs c 
             LEFT JOIN club_settings cs ON c.club_id = cs.club_id 
-            WHERE c.subdomain = ? AND c.status = 'active'
+            WHERE c.club_id = ? AND c.deleted_at IS NULL
         `;
         
-        db.query(query, [subdomain], (err, results) => {
+        db.query(query, [clubId], (err, results) => {
             if (err) {
                 console.error('Error loading club data:', err);
-                res.locals.club = { name: 'DojoPro', club_id: 1, subdomain: 'demo' };
+                res.locals.club = { club_name: 'ClubDirector', club_id: 1 };
             } else if (results.length > 0) {
                 res.locals.club = results[0];
             } else {
                 // Default demo club
                 res.locals.club = {
                     club_id: 1,
-                    name: 'Demo Martial Arts Club',
-                    subdomain: subdomain,
+                    club_name: 'Demo Club',
                     logo_url: null,
                     primary_color: '#667eea',
                     secondary_color: '#764ba2',
@@ -139,7 +135,7 @@ app.use(async (req, res, next) => {
         });
     } catch (error) {
         console.error('Middleware error:', error);
-        res.locals.club = { name: 'DojoPro', club_id: 1, subdomain: 'demo' };
+        res.locals.club = { club_name: 'ClubDirector', club_id: 1 };
         next();
     }
 });
@@ -636,6 +632,6 @@ app.use((req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`DojoPro Member Portal running on port ${PORT}`);
+    console.log(`ClubDirector Member Portal running on port ${PORT}`);
     console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });

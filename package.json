@@ -1,5 +1,5 @@
 {
-  "name": "dojopro-member-portal",
+  "name": "clubdirector-member-portal",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
@@ -10,11 +10,11 @@
   "keywords": [
     "martial arts",
     "member portal",
-    "dojopro"
+    "clubdirector"
   ],
-  "author": "DojoPro",
+  "author": "ClubDirector",
   "license": "ISC",
-  "description": "Member portal for DojoPro martial arts management system",
+  "description": "Member portal for ClubDirector martial arts management system",
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
